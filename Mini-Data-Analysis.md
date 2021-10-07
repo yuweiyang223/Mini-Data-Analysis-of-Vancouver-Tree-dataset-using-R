@@ -1,9 +1,13 @@
-Mini data analysis
+Mini data analysis - Vancouver trees
 ================
-Yuwei
+Yuwei Yang
 2021/10/5
 
-Please install the following packages before running the code.
+Please install the following three packages before running the code. The
+package datateachr contains 7 data set and we will use 4 of them. The
+package tidyverse contains the package dplyr and we will use it to do
+data wrangling. The package ggplot2 is used to do visualization in this
+analysis.
 
 ``` r
 library(datateachr)
@@ -11,9 +15,9 @@ library(tidyverse)
 library(ggplot2)
 ```
 
-# Task 1: Choose datasets
+# Task 1: Choose the dataset
 
-## 1.1 Choose four datasets from datateachr packages:
+## 1.1 Choose 4 datasets from datateachr packages:
 
 1: steam\_games: Acquired courtesy of Kaggle. It currently has 40833
 rows and 21 columns.
@@ -30,11 +34,12 @@ It currently has 569 rows and 32 columns.
 
 ## 1.2 Explore datasets:
 
-This part, I will check the class of the data using class(), the number
-of rows and column and the name of each columns with some useful
-information using glimse().
+This part, I will check the class of the data using class(), and the
+number of rows and columns, and the name of each columns with some
+useful information using glimse(). You may also use ?dataset to get the
+description and other relative information for this dataset.
 
-This is the information for steam\_games data:
+The following is the information for steam\_games data:
 
 ``` r
 class(steam_games)
@@ -70,7 +75,11 @@ glimpse(steam_games)
     ## $ original_price           <dbl> 19.99, 29.99, 39.99, 44.99, 0.00, NA, 59.99, ~
     ## $ discount_price           <dbl> 14.99, NA, NA, NA, NA, 35.18, 70.42, 17.58, N~
 
-This is the information for flow\_sample data:
+``` r
+#?steam_games
+```
+
+The following is the information for flow\_sample data:
 
 ``` r
 class(flow_sample)
@@ -92,7 +101,7 @@ glimpse(flow_sample)
     ## $ flow         <dbl> 314, 230, 264, 174, 232, 214, 236, 309, 174, 345, 185, 24~
     ## $ sym          <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N~
 
-This is the information for vancouver\_trees data:
+The following is the information or vancouver\_trees data:
 
 ``` r
 class(vancouver_trees)
@@ -127,7 +136,7 @@ glimpse(vancouver_trees)
     ## $ longitude          <dbl> -123.1161, -123.1147, -123.0846, -123.0870, -123.08~
     ## $ latitude           <dbl> 49.21776, 49.21776, 49.23938, 49.23469, 49.23894, 4~
 
-This is the information for cancer\_sample data:
+The following is the information for cancer\_sample data:
 
 ``` r
 class(cancer_sample)
@@ -176,13 +185,7 @@ glimpse(cancer_sample)
 
 # 1.3 Select dataset:
 
-The reasons for choosing these two datasets are quite different. I
-choose cancer\_sample because the dataset contains a lot of variables
-and they are numeric values, so I think it will be interesting to
-analysis the relationship between these data and plot some useful
-graphs. And I choose steam\_games because I have been using steam for
-few years so I am very interested in analyzing the data from steam
-games.
+The following are the questions I have for each dataset.
 
 steam\_games: 1. Which developer and publisher receive the most
 achievements? 2. Does achievements of the game relate to the
@@ -200,12 +203,25 @@ how many trees were planted?
 Cancer\_sample: For different diagnosis, will the parameters be
 different?
 
-I decide to choose vancouver\_trees to analysis because the variable
-seem to have better relationship between them.
+I decide to analyze vancouver\_trees because I am currently living in
+vancouver, so I am very interested in the data of this city. Also, the
+data set seems to have some relationships between each variable. For
+example, I am interested in weather the diameter of a tree will be
+affect by other factors.
 
-\#2.1 1. Plot the distribution of the number of trees using different
-height range id. (0-10 for every 10 feet (e.g., 0 = 0-10 ft, 1 = 10-20
-ft, 2 = 20-30 ft, and 10 = 100+ ft))
+# 2: The following four questions are the goal of this analysis:
+
+1.  What’s the distribution of number of trees with respect to different
+    height range?
+2.  What’s the relationship between tree diameter and the age of this
+    tree.
+3.  Will this relationship be different of each species?
+4.  Will the root barrier affect the diameter of the tree within each
+    species?
+
+# 3. Explore dataset
+
+## 1. The first question I am interested in is what the distribution of number of trees with respect to different height range is.I am going to use ggplot2 to plot the distribution of the number of trees using different height range id. The height range is is between 0-10 for every 10 feet (e.g., 0 = 0-10 ft, 1 = 10-20 ft, 2 = 20-30 ft, and 10 = 100+ ft).
 
 ``` r
 ggplot(vancouver_trees, aes(height_range_id)) +
@@ -215,41 +231,45 @@ ggplot(vancouver_trees, aes(height_range_id)) +
 ```
 
 ![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-2. Add a new variable named tree\_age which is the number of years
-between the trees were planted and the current year 2021. I want to use
-this later to find the relationship between the age of the tree and the
-height of the tree.
+\#\# 2. The second question I want to analyze is what’s the relationship
+between tree diameter and the age of this tree. I am going to add a new
+column named tree\_age which is the number of years between the trees
+were planted and the current date 2021-10-01(round to 2 decimal places)
+by using dplyr verbs. I will use this tibble later to find the
+relationship between the age of the tree and the height of the tree.
 
 ``` r
-age_and_height <- vancouver_trees %>%
+vancouver_trees <- vancouver_trees %>%
   # Calling difftime() function
-  mutate(tree_age = round(as.numeric(difftime("2021-10-01", date_planted, units="days"))/365,4)) %>%
-  select(species_name,diameter, tree_age, root_barrier)
+  mutate(tree_age = round(as.numeric(difftime("2021-10-01", date_planted, units="days"))/365, 2)) 
+  # add tree_age column to vancouver_trees tibble
 
-print(age_and_height)
+head(vancouver_trees)
 ```
 
-    ## # A tibble: 146,611 x 4
-    ##    species_name diameter tree_age root_barrier
-    ##    <chr>           <dbl>    <dbl> <chr>       
-    ##  1 AMERICANA        10       22.7 N           
-    ##  2 SERRATA          10       25.4 N           
-    ##  3 JAPONICA          4       27.9 N           
-    ##  4 AMERICANA        18       25.4 N           
-    ##  5 CAMPESTRE         9       27.8 N           
-    ##  6 CALLERYANA        5       NA   N           
-    ##  7 PLATANOIDES      15       27.8 N           
-    ##  8 PLATANOIDES      14       27.8 N           
-    ##  9 PLATANOIDES      16       27.8 N           
-    ## 10 AMERICANA         7.5     27.8 N           
-    ## # ... with 146,601 more rows
+    ## # A tibble: 6 x 21
+    ##   tree_id civic_number std_street genus_name species_name cultivar_name  
+    ##     <dbl>        <dbl> <chr>      <chr>      <chr>        <chr>          
+    ## 1  149556          494 W 58TH AV  ULMUS      AMERICANA    BRANDON        
+    ## 2  149563          450 W 58TH AV  ZELKOVA    SERRATA      <NA>           
+    ## 3  149579         4994 WINDSOR ST STYRAX     JAPONICA     <NA>           
+    ## 4  149590          858 E 39TH AV  FRAXINUS   AMERICANA    AUTUMN APPLAUSE
+    ## 5  149604         5032 WINDSOR ST ACER       CAMPESTRE    <NA>           
+    ## 6  149616          585 W 61ST AV  PYRUS      CALLERYANA   CHANTICLEER    
+    ## # ... with 15 more variables: common_name <chr>, assigned <chr>,
+    ## #   root_barrier <chr>, plant_area <chr>, on_street_block <dbl>,
+    ## #   on_street <chr>, neighbourhood_name <chr>, street_side_name <chr>,
+    ## #   height_range_id <dbl>, diameter <dbl>, curb <chr>, date_planted <date>,
+    ## #   longitude <dbl>, latitude <dbl>, tree_age <dbl>
 
-3.  Next, we are going to find out if there is a relationship between
-    the age of the tree and the diameter of the tree and what is the
-    relationship using geom\_jitter.
+3.  Next, I am going to find out if there is a relationship between the
+    age of the tree and the diameter of the tree. I will use ggplot2
+    package to plot the jitter plot. I set the range of diameter to 0
+    and 50 because I want to get rid of the outliers in the graph, so it
+    is more easier to see.
 
 ``` r
-ggplot(age_and_height, aes(tree_age, diameter))+
+ggplot(vancouver_trees, aes(tree_age, diameter))+
   geom_jitter(outlier.shape = NA, aes(alpha=0.6, colour=tree_age))+
   coord_cartesian(ylim =  c(0, 50))
 ```
@@ -259,45 +279,50 @@ ggplot(age_and_height, aes(tree_age, diameter))+
     ## Warning: Removed 76548 rows containing missing values (geom_point).
 
 ![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
-
-4.  As we can see, from the previous part, it seems that the age of the
-    tree has a positive relationship with it’s diameter. Next, we are
-    going to analysis this in details by separating the trees into
-    different species and look at the relationship within each species.
+4. As we can see, from the jitterplot, it seems that the diameter of
+three tend to be larger as the age getting larger. So, next, I want to
+analyze this relationship in details by separating the trees into
+different species and look at the relationship within each species. I
+will use both dplyr and ggplot2 in this part. Also, I want to plot only
+those species with more than 5000 trees so we have big enough sample to
+analyze. You may noticed I set the range of the diameter to 0 and 25
+this time is because I want to get rid of the most outliers for these
+species.
 
 ``` r
-age_and_height %>%
+ vancouver_trees%>%
   group_by(species_name) %>%
   filter(n() >5000) %>%
   ggplot(aes(tree_age, diameter))+ 
   geom_point()+  facet_wrap(~species_name)+
-  coord_cartesian(ylim =  c(0, 25))
+  coord_cartesian(ylim =  c(0,35))
 ```
 
     ## Warning: Removed 36570 rows containing missing values (geom_point).
 
 ![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
-5. Last thing I can think about is the root barrier might affect the
-trees’ diameter.
+
+Again, the diameter of the tree seems to have positive relationship with
+the age of the tree within each species. And some of species tend of
+have larger diameter than others such as Serrulata tend to have larger
+diameter when its age getting older.
+
+5.  And the last thing I can think about is the root barrier might
+    affect the trees’ diameter as well. I am going using the same plot
+    above but with different color for each root barrier.
 
 ``` r
-age_and_height %>%
-  filter(root_barrier == 'Y') %>%
+vancouver_trees %>%
   group_by(species_name)%>%
-  filter(n()>500) %>%
+  filter(n()>5000) %>%
   ggplot(aes(tree_age, diameter))+ 
-  geom_point()+  facet_wrap(~species_name)+
-  coord_cartesian(ylim =  c(0, 25))
+  geom_point(aes(colour=root_barrier))+  facet_wrap(~species_name)+
+  coord_cartesian(ylim =  c(0, 35))
 ```
 
-    ## Warning: Removed 31 rows containing missing values (geom_point).
+    ## Warning: Removed 36570 rows containing missing values (geom_point).
 
 ![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
-# 3: The following four questions are the goal of this analysis:
-
-1.  For each species, will the height be very different? (use jitter
-    plot/side by side boxplot) 2. Will the root barrier affect the
-    diameter of the tree within each species?
-2.  Will the age of the tree affect the height of the tree?
-3.  How many trees are there at different height?
+From the graphs, I don’t think the root barrier is affecting the
+diameter of the trees.
