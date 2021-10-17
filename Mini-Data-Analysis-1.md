@@ -239,7 +239,7 @@ ggplot(vancouver_trees, aes(height_range_id)) +
   theme_classic()
 ```
 
-![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Mini-Data-Analysis-1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 From the histogram above, we can see that most of the trees have a
 height between 10 and 30 ft.
@@ -279,7 +279,7 @@ ggplot(vancouver_trees_sub, aes(tree_age, diameter))+
 
     ## Warning: Removed 76548 rows containing missing values (geom_point).
 
-![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Mini-Data-Analysis-1_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ## 4. As we can see, from the jitterplot, it seems that the diameter of trees tends to be larger as the age getting larger. So, next, I want to analyze this relationship in detail by separating the trees into different species and look at the relationship within each species. I will use both dplyr and ggplot2 in this part. Also, I want to plot only those species that have more than 5000 trees so we have enough samples to analyze. You may be noticed that I set the range of the diameter to 0 and 35, and this is because I want to get rid of the most outliers for these species.
 
@@ -297,7 +297,7 @@ vancouver_trees_sub %>%
 
     ## Warning: Removed 36570 rows containing missing values (geom_point).
 
-![](Mini-Data-Analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Mini-Data-Analysis-1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 Again, the diameter of the tree seems to have a positive relationship
 with the age of the tree within each species. And some species tend to
