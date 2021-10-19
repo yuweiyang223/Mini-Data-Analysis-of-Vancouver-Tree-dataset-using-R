@@ -4,7 +4,7 @@
 
 
 
-The repository [Mini Data Analysis 1](https://github.com/stat545ubc-2021/Mini-Data-Analysis-1---Yuwei) was created under the [stat545ubc-2021 GitHub account](https://github.com/stat545ubc-2021)  to complete the [Mini Data-Analysis Deliverable 1](https://stat545.stat.ubc.ca/mini-project/mini-project-1/) for the [STAT545 2021 course](https://stat545.stat.ubc.ca/;). The goals of this first project are to become familiar with the vancouver_trees dataset, think of 4 questions for further analysis, and generate a reproducible clear report using R Markdown. The repository contains a file with graphs and two documents in different formats; markdown (`.md`), and RMarkdown (`.Rmd`).
+The repository [Mini Data Analysis](https://github.com/stat545ubc-2021/Mini-Data-Analysis---Yuwei) was created under the [stat545ubc-2021 GitHub account](https://github.com/stat545ubc-2021)  to complete the [Mini Data-Analysis Deliverable 1](https://stat545.stat.ubc.ca/mini-project/mini-project-1/) for the [STAT545 2021 course](https://stat545.stat.ubc.ca/;). The goals of this first project are to become familiar with the vancouver_trees dataset, think of 4 questions for further analysis, and generate a reproducible clear report using R Markdown. The repository contains a file with graphs and two documents in different formats; markdown (`.md`), and RMarkdown (`.Rmd`).
 
 
 ## Documents on the repository:
