@@ -274,7 +274,7 @@ I am going to untidy it by using the pivot_longer() to combine the columns(genus
 vancouver_trees_sub1 <- vancouver_trees_sub %>%
   pivot_longer(cols = c("genus_name":"common_name"), 
               names_to = "name_class", values_to = "name_of_tree")
-print(vancouver_trees_sub1)
+head(vancouver_trees_sub1)
 ```
 
 **Tidy:**
@@ -285,8 +285,9 @@ The columns(genus_name, species_name,cultivar_name, common_name) are combined in
 vancouver_trees_sub2 <- vancouver_trees_sub1 %>%
   pivot_wider( names_from = name_class,
                 values_from = name_of_tree) %>%
-  unnest()
-print(vancouver_trees_sub2)
+  unnest() %>%
+  select(genus_name:common_name, everything())
+head(vancouver_trees_sub2)
 ```
 
 
