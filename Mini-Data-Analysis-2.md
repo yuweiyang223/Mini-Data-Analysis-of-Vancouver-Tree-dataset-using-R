@@ -452,23 +452,18 @@ to do the analysis.
 vancouver_trees_sub1 <- vancouver_trees_sub %>%
   pivot_longer(cols = c("genus_name":"common_name"), 
               names_to = "name_class", values_to = "name_of_tree")
-print(vancouver_trees_sub1)
+head(vancouver_trees_sub1)
 ```
 
-    ## # A tibble: 586,444 x 6
-    ##    neighbourhood_name       height_range_id diameter date_planted name_class   
-    ##    <chr>                              <dbl>    <dbl> <date>       <chr>        
-    ##  1 MARPOLE                                2       10 1999-01-13   genus_name   
-    ##  2 MARPOLE                                2       10 1999-01-13   species_name 
-    ##  3 MARPOLE                                2       10 1999-01-13   cultivar_name
-    ##  4 MARPOLE                                2       10 1999-01-13   common_name  
-    ##  5 MARPOLE                                4       10 1996-05-31   genus_name   
-    ##  6 MARPOLE                                4       10 1996-05-31   species_name 
-    ##  7 MARPOLE                                4       10 1996-05-31   cultivar_name
-    ##  8 MARPOLE                                4       10 1996-05-31   common_name  
-    ##  9 KENSINGTON-CEDAR COTTAGE               3        4 1993-11-22   genus_name   
-    ## 10 KENSINGTON-CEDAR COTTAGE               3        4 1993-11-22   species_name 
-    ## # ... with 586,434 more rows, and 1 more variable: name_of_tree <chr>
+    ## # A tibble: 6 x 6
+    ##   neighbourhood_name height_range_id diameter date_planted name_class name_of_tree
+    ##   <chr>                        <dbl>    <dbl> <date>       <chr>      <chr>       
+    ## 1 MARPOLE                          2       10 1999-01-13   genus_name ULMUS       
+    ## 2 MARPOLE                          2       10 1999-01-13   species_n~ AMERICANA   
+    ## 3 MARPOLE                          2       10 1999-01-13   cultivar_~ BRANDON     
+    ## 4 MARPOLE                          2       10 1999-01-13   common_na~ BRANDON ELM 
+    ## 5 MARPOLE                          4       10 1996-05-31   genus_name ZELKOVA     
+    ## 6 MARPOLE                          4       10 1996-05-31   species_n~ SERRATA
 
 **Tidy:**
 
@@ -481,7 +476,8 @@ again.
 vancouver_trees_sub2 <- vancouver_trees_sub1 %>%
   pivot_wider( names_from = name_class,
                 values_from = name_of_tree) %>%
-  unnest()
+  unnest() %>%
+  select(genus_name:common_name, everything())
 ```
 
     ## Warning: Values are not uniquely identified; output will contain list-cols.
@@ -493,24 +489,20 @@ vancouver_trees_sub2 <- vancouver_trees_sub1 %>%
     ## Please use `cols = c(genus_name, species_name, cultivar_name, common_name)`
 
 ``` r
-print(vancouver_trees_sub2)
+head(vancouver_trees_sub2)
 ```
 
-    ## # A tibble: 146,611 x 8
-    ##    neighbourhood_name       height_range_id diameter date_planted genus_name
-    ##    <chr>                              <dbl>    <dbl> <date>       <chr>     
-    ##  1 MARPOLE                                2       10 1999-01-13   ULMUS     
-    ##  2 MARPOLE                                2       10 1999-01-13   ULMUS     
-    ##  3 MARPOLE                                4       10 1996-05-31   ZELKOVA   
-    ##  4 KENSINGTON-CEDAR COTTAGE               3        4 1993-11-22   STYRAX    
-    ##  5 KENSINGTON-CEDAR COTTAGE               4       18 1996-04-29   FRAXINUS  
-    ##  6 KENSINGTON-CEDAR COTTAGE               2        9 1993-12-17   ACER      
-    ##  7 MARPOLE                                2        5 NA           PYRUS     
-    ##  8 MARPOLE                                2        5 NA           CARPINUS  
-    ##  9 MARPOLE                                2        5 NA           PRUNUS    
-    ## 10 MARPOLE                                2        5 NA           RHUS      
-    ## # ... with 146,601 more rows, and 3 more variables: species_name <chr>,
-    ## #   cultivar_name <chr>, common_name <chr>
+    ## # A tibble: 6 x 8
+    ##   genus_name species_name cultivar_name   common_name         neighbourhood_name
+    ##   <chr>      <chr>        <chr>           <chr>               <chr>             
+    ## 1 ULMUS      AMERICANA    BRANDON         BRANDON ELM         MARPOLE           
+    ## 2 ULMUS      AMERICANA    BRANDON         BRANDON ELM         MARPOLE           
+    ## 3 ZELKOVA    SERRATA      <NA>            JAPANESE ZELKOVA    MARPOLE           
+    ## 4 STYRAX     JAPONICA     <NA>            JAPANESE SNOWBELL   KENSINGTON-CEDAR ~
+    ## 5 FRAXINUS   AMERICANA    AUTUMN APPLAUSE AUTUMN APPLAUSE ASH KENSINGTON-CEDAR ~
+    ## 6 ACER       CAMPESTRE    <NA>            HEDGE MAPLE         KENSINGTON-CEDAR ~
+    ## # ... with 3 more variables: height_range_id <dbl>, diameter <dbl>,
+    ## #   date_planted <date>
 
 ### 2.3
 
