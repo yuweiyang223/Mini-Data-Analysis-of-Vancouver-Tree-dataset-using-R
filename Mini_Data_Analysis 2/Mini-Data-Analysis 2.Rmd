@@ -1,0 +1,331 @@
+---
+title: "Mini Data Analysis Milestone 2 - vancouver_trees dataset"
+author: "Yuwei Yang"
+date: "2021/10/14"
+output: github_document
+---
+
+
+#Goal of this project:
+
+Manipulating special data types in R: factors and/or dates and times.
+
+Fitting a model object to your data, and extract a result.
+
+Reading and writing data as separate files.
+
+#Setup
+
+Please install the following four packages before running the code. The package datateachr contains 7 datasets and I will use vancouver_trees dataset for this analysis. The package tidyverse contains the package dplyr and tidyr, and I will use it to do data wrangling and tidy data. The package ggplot2 is used to do visualization in this analysis. The package lubridate provides tools to parse and manipulate dates. 
+
+```{r, message = FALSE}
+library(datateachr) #contain the dataset we will be using
+library(tidyverse) 
+library(ggplot2)
+library(lubridate)
+```
+
+For this Mini Data Analysis 2, I will be using the vancouver_trees dataset. This analysis contains two parts: 1. I will summarize and plot one graph using the vancouver_trees dataset for each of the four research questions. 2. Tidy and untidy the dataset(I will reshape the vancouver_trees dataset). 
+
+
+# Task 1: Process and summarize the data
+
+### 1.1 Research Questions: 
+**The following 4 questions are the goal of this analysis:**
+
+1. *How many trees were planted every year for each neighbourhood?* 
+2. *What's the relationship between the height of the tree and the age of the tree for each neighbourhood?* 
+3. *Does the diameter of trees different for each species?*
+4. *Does the diameter of trees different in each neighbourhood?* 
+
+### 1.2 Summarizing and graphing: 
+
+**I will summarize one tibble and plot one graph for each question.** 
+
+### First Question: How many trees were planted every year for each neighbourhood?
+
+**Summarizing:** 
+
+I am going to create a new tibble with three columns named tree_neighbourhood which contain neighbourhood name, year of the tree planted and the number of trees planted that year by using dplyr verbs. I will use this tibble later to plot the graph. 
+
+
+```{r}
+tree_neighbourhood<-vancouver_trees %>%
+  group_by(neighbourhood_name, plant_year = year(date_planted)) %>%
+  summarise(number_of_trees = n()) %>%
+  drop_na()
+print(tree_neighbourhood)
+```
+
+ **Graphing:** 
+
+Now, the tibble is ready to use. I am going to plot the histogram, path and point of the number of trees respect to the year that the trees were planted and separate them into each neighbourhood by using dplyr and ggplot2. Note: I adjust the fill and alpha transparency for the histogram in order to see the path better. I set the range of number of trees to 0 and 500 so it is easier to see the relationship.
+
+```{r fig.height = 15, fig.width = 12}
+tree_neighbourhood %>%
+  group_by(neighbourhood_name) %>%
+  ggplot(aes(x=plant_year, y= number_of_trees)) +
+  geom_histogram(stat="identity", aes(alpha=0.3),fill="cornflowerblue") +
+  coord_cartesian(ylim =  c(0,500))+
+  geom_path()+geom_point(size=1,color="blue") +
+  facet_wrap(~neighbourhood_name,ncol=3)+
+  xlab("plant year")+ylab("number of trees")+
+  theme_light()
+```
+
+The summarizing part helps to create the tibble for the graphing part, and the graphs show that the number of trees were planted every year are quite different in each neighbourhood. 
+
+
+
+### Second Question: What's the relationship between the height of the tree and the age of the tree for each neighbourhood?
+
+I want to find the relationship between height of the tree and the age of the tree. I am going to create a tibble named height_sub which contains the name of neighbourhood, age of tree, the mean/minimum/maximum/median/standard deviation of the height, then I arranged the tibble by the age of the tree. The height range is between 0-10 for every 10 feet (e.g., 0 = 0-10 ft, 1 = 10-20 ft, 2 = 20-30 ft, and 10 = 100+ ft). For example, the mean of the height is 1 means the mean of the height is between 10-20ft. I will use the height_sub tibble to plot the graph. 
+
+**Summarizing:**
+
+```{r}
+height_sub<-vancouver_trees %>%
+  group_by(neighbourhood_name, age_of_tree = 2021 - year(date_planted)) %>%
+  summarise(height_mean=round(mean(height_range_id, na.rm=TRUE), 2),
+            height_min=min(height_range_id, na.rm=TRUE), 
+            height_max=max(height_range_id, na.rm=TRUE), 
+            height_median=median(height_range_id, na.rm=TRUE),
+            height_sd=sd(height_range_id, na.rm=TRUE))%>%
+  arrange(age_of_tree)
+
+print(height_sub)
+```
+
+
+**Graphing:** 
+
+I am going to plot the mean of the height with respect to the age of tree for each neighbourhood using the geom_point, geom_line, and facet_wrap. 
+
+```{r fig.height = 15, fig.width = 13}
+height_sub %>%
+  group_by(neighbourhood_name) %>%
+  drop_na() %>% #drop null columns
+  ggplot(aes(x=age_of_tree, y= height_mean)) +
+  geom_point(size=1.5, color="purple") + 
+  geom_line(aes(alpha=0.4),colour = "blue")+
+  facet_wrap(~neighbourhood_name, ncol = 4)+
+  ylab("mean of the height") + xlab("age of tree")
+```
+
+The summarizing part creates the tibble for the graphing part, and the graphs show that as the age of the tree gets larger, the mean of the height of three tends to get larger. There is a positive relationship between the height and the age of the tree. 
+
+
+### Third Question: Does the diameter different for each species? 
+
+**Summarizing:** 
+  
+To find out if the diameter is different for each species, I am going to create a tibble named tree_diameter which contains species name, mean/minimum/maximum/median/standard deviation of the diameter for each species, and the number of trees of each species by using summarise(). Then I arranged the tibble using the mean of diameter. The tree_diameter tibble is used for graphing.  
+ 
+
+```{r}
+tree_diameter <- vancouver_trees %>%
+  select(diameter, species_name) %>%
+  group_by(species_name) %>%
+  summarise(diameter_mean=mean(diameter, na.rm=TRUE), diameter_min=min(diameter, na.rm=TRUE), diameter_max=max(diameter, na.rm=TRUE), diameter_median=median(diameter, na.rm=TRUE), diameter_sd=sd(diameter, na.rm=TRUE), number_of_trees=n()) %>%
+  arrange(across(diameter_mean))
+print(tree_diameter)
+```
+
+**Graphing:** 
+
+I am going to use the tibble above to plot the point and line of mean and median of the trees with respect to each species. Since there are 283 species, it is impossible to plot all of them. So I decide to plot only those species that have more than 2000 trees so we have enough samples to analyze.  I also set the range of diameter_mean to 0 and 30 to make the graph easier to see. 
+
+
+```{r fig.width=10}
+tree_diameter %>%
+  filter(number_of_trees >2000) %>%
+  # Filter the species that have more than 2000 trees
+  ggplot(aes(species_name)) + 
+  geom_line(aes(y = diameter_mean, colour = "mean",group=1)) + 
+  geom_point(aes( y = diameter_mean)) +
+  #plot the line and point for mean
+  geom_line(aes(y = diameter_median, colour = "median", group=1))+
+  geom_point(aes( y = diameter_median)) +
+  #plot the line and point for median
+  coord_cartesian(ylim =  c(0,30))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+The graphing part uses the tibble from summarizing part to analyze the relationship between the mean/mean of the tree and different species. From the graph, the mean and median of diameter for each species are quite different. 
+
+
+### Fourth Question: Does the tree diameter different in each neighbourhood with respect to age of the tree?
+
+**Summarizing:** 
+
+For the summarizing part, I am going divide the age of the trees into 5 groups( 0 to 6, 6 to 11, 11 to 16, 16 to 21, 21 to 26, and 26 +) because I want to plot the boxplot for the diameter for each neightbourhood, and by dividing them into different age group, it will be easier to compare the boxplots. 
+
+Then, I am going to group the data by neighbourhood name and the 5 age groups, and then use summarise() to find the mean/minimum/maximum/median/standard deviation of the diameter for each neighbourhood and each age group. It is arranged by the age groups, so it is easier to see if the diameter is different. From the tibble, it is clear that the mean diameters are different for each age group. Especially when the age gets larger, this difference becomes larger.  
+
+
+```{r}
+vancouver_trees %>%
+  select(neighbourhood_name, date_planted, diameter) %>%
+  drop_na() %>% # drop all the rows that contain NULL
+  mutate(age_of_tree = 2021 - year(date_planted)) %>%
+  #add the column of age of the tree
+  mutate(age_range = case_when(age_of_tree<6 ~ "0 to 6",
+                               age_of_tree<11 ~ "6 to 11",
+                               age_of_tree<16 ~ "11 to 16",
+                               age_of_tree<21 ~ "16 to 21",
+                               age_of_tree<26 ~ "21 to 26",
+                               TRUE ~ "26+")) %>%
+  group_by(neighbourhood_name, age_range) %>%
+  summarise( diameter_mean=mean(diameter, na.rm=TRUE), diameter_min=min(diameter, na.rm=TRUE), diameter_max=max(diameter, na.rm=TRUE), diameter_median=median(diameter, na.rm=TRUE), diameter_sd=sd(diameter, na.rm=TRUE), n=n()) %>%
+  arrange(across(age_range))
+```
+**Graphing:** 
+
+For the graph, I am going divide the age of the trees into 5 groups( 0 to 6, 6 to 11, 11 to 16, 16 to 21, 21 to 26, and 26 +), and use filter to select neighbourhood that have more than 4000 trees because we can see from above tibble, there are a lot of neighbourhood and it is hard to plot all of them. I am going to plot the boxplot and jitterplot of the diameter for each age group in each neighbourhood. 
+
+```{r fig.height = 10, fig.width=12}
+vancouver_trees %>%
+  select(neighbourhood_name, date_planted, diameter) %>%
+  drop_na() %>% # drop all the rows that contain NULL
+  mutate(age_of_tree = 2021 - year(date_planted)) %>%
+  #add the column of age of the tree
+  mutate(age_range = case_when(age_of_tree<6 ~ "0 to 6",
+                               age_of_tree<11 ~ "6 to 11",
+                               age_of_tree<16 ~ "11 to 16",
+                               age_of_tree<21 ~ "16 to 21",
+                               age_of_tree<26 ~ "21 to 26",
+                               TRUE ~ "26+")) %>%
+  #assign the tree into each age group
+  group_by(neighbourhood_name) %>%
+  filter(n() > 4000 ) %>%
+  # Filter the neighbourhood that have more than 2000 trees
+  ggplot(aes(x=age_range,y= diameter))+
+  scale_x_discrete(limits = c("0 to 6","6 to 11", "11 to 16","16 to 21", "21 to 26", "26-")) +
+  geom_jitter(size=0.7, colour = "pink") +
+  geom_boxplot(aes(alpha = 0.3)) +
+  facet_grid(~neighbourhood_name) +  
+  coord_cartesian(ylim =  c(0, 25))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+Both the summarizing and graphing parts show that the diameters are different in each neighboughood for age greater than 11. 
+
+### 1.3 
+
+The following are my analysis for each questions:
+
+1. *How many trees were planted per neighborhood every year?* 
+
+The number of trees was planted per neighborhood is quite different every year. And it does not have a clear pattern of how they decide how many trees they are going to plant. I want to analyze this question further in more detail. I decided to pick the Kerrisdale neibourhood to analyze how many trees were planted every year/season/month. 
+
+2. *What's the relationship between the height of the tree and the age of the tree for each neighbourhood?* 
+
+The graph shows a positive relationship between the mean height and the age of the tree in each neighbourhood.   
+
+3. *Does the diameter of trees different for each species?*
+
+The mean and median of the diameter for each species are quite different. I decide to pick the AMERICANO species to analyze the relationship of diameter and the age of the tree for this specific species. 
+
+4. *Does the diameter of trees different in each neighbourhood* 
+
+The result is yes. As the age becomes larger, the diameter tends to have a bigger difference. 
+
+
+# Task 2: Tidy the data 
+
+The definition of *tidy* data:
+
+- Each row is an **observation**
+- Each column is a **variable**
+- Each cell is a **value**
+
+*Tidy'ing* data is sometimes necessary because it can simplify computation. Other times it can be nice to organize data so that it can be easier to understand when read manually. 
+
+
+### 2.1 Tidy or Untidy? 
+
+I selected the following 8 columns and store them in to the tibble named vancouver_trees_sub. I will use this tibble for later tasks. 
+
+```{r}
+vancouver_trees_sub <- vancouver_trees %>%
+  select(genus_name,species_name,cultivar_name,common_name,neighbourhood_name,height_range_id, diameter,date_planted)
+print(vancouver_trees_sub)
+```
+
+genus_name: This column contains the different genus name of each tree. 
+
+species_name: This column contains the different species name of each tree. 
+
+cultivar_name: This column contains the cultivar  name of each tree. 
+
+common_name: This column contains the common  name of each tree.
+
+neighbourhood_name: This column contains the name of neighbourhood where the tree is located. 
+
+height_range_id: The height range is is between 0-10 for every 10 feet (e.g., 0 = 0-10 ft, 1 = 10-20 ft, 2 = 20-30 ft, and 10 = 100+ ft).
+
+diameter: The diameter of the tree in inches.
+
+date_planted: The date of planting in YYYYMMDD format. 
+
+**This tibble is tidy. Each row in the tibble is a unique observation and each column is a distinct variable. Each cell is a value respect to each variable. For my research questions, I am able to use the tibble directly without tidy the data.** 
+
+
+
+### 2.2 Tidy and Untidy exercise
+
+Since the data is tidy. I am going to untidy the data first. Then I will tidy it back to the original tibble.
+
+**Untidy:**
+
+I am going to untidy it by using the pivot_longer() to combine the columns(genus_name, species_name,cultivar_name, common_name) together. This is untidy because for my research question, I am analyzing the relationship of diameter with respect to species. If these columns are combined, I will need to use pivot_wider to tidy it first to do the analysis. 
+
+```{r}
+vancouver_trees_sub1 <- vancouver_trees_sub %>%
+  pivot_longer(cols = c("genus_name":"common_name"), 
+              names_to = "name_class", values_to = "name_of_tree")
+head(vancouver_trees_sub1)
+```
+
+**Tidy:**
+
+The columns(genus_name, species_name,cultivar_name, common_name) are combined into two columns(name_class and name_of_tree). This data is untidy right now, so I am going to use pivot_wider to make it tidy again.   
+
+```{r}
+vancouver_trees_sub2 <- vancouver_trees_sub1 %>%
+  pivot_wider( names_from = name_class,
+                values_from = name_of_tree) %>%
+  unnest() %>%
+  select(genus_name:common_name, everything())
+head(vancouver_trees_sub2)
+```
+
+
+
+### 2.3 
+
+I want to analyze the following two questions in milestone 3:
+
+I modified my questions to be more specific from the original questions which are too broad. So I pick one specific species and one specific neighbourhood to analyze.   
+
+1. What's relationship of diameter with respect to age of the tree for AMERICANO species. 
+
+2. How many trees were planted every year in Kerrisdale neighbourhood? How about every season? Every month? 
+
+
+Next, I am going to modify the data to make it more appropriate to answer the above questions in milestone 3. To answer the 2 questions, I will select the following columns: species_name, diameter, date_planted, neighbourhood_name. Then I am going to filter the rows that either the species is AMERICANA or the neighbourhood_name is KERRISDALE. Also, I am going to add three columns which are the age of the tree in years, month and the season that the tree was planted. Since I will no longer need the column of date_planted, I will drop this column at the end. 
+
+```{r}
+vancouver_trees %>%
+  select(species_name,  diameter, date_planted, neighbourhood_name) %>%
+  filter(species_name == "AMERICANA" | neighbourhood_name == "KERRISDALE") %>%
+  drop_na() %>%
+  mutate(age_of_tree = round(as.numeric((ymd(20211004) - ymd(date_planted))/365),digits=2)) %>%
+  mutate(plant_month = month(date_planted)) %>%
+  mutate(plant_season = case_when(plant_month < 3 ~ "Winter",
+                                  plant_month < 6 ~ "Spring",
+                                  plant_month < 9 ~ "Summer",
+                                  plant_month < 12 ~ "Fall",
+                                  TRUE ~ "Winter")) %>%
+  select(-date_planted)
+```
