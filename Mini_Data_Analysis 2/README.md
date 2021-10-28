@@ -1,1 +1,1 @@
-
+Mini_Data_Analysis 2: This file contains the second analysis of vancouver_trees dataset and R code I wrote in order to answer the four reseach questions. It contains tibble and plots for the analysis.
