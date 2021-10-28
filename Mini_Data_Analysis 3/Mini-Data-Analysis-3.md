@@ -8,7 +8,7 @@ Yuwei
 -   Manipulating special data types in R: factors and/or dates and
     times.
 
--   Fitting a model object to your data, and extract a result.
+-   Fitting a model object to your data, and extracting a result.
 
 -   Reading and writing data as separate files.
 
@@ -31,12 +31,12 @@ library(lubridate)
 
 For this Mini Data Analysis 3, I will be using the vancouver\_trees
 dataset. This analysis contains three exercises: 1. Special Data types
-2. Modelling 3. Reading and writing data
+2. Modeling 3. Reading and writing data
 
 # Research questions:
 
-1.  **What’s relationship of diameter with respect to age of the tree
-    for AMERICANO species.**
+1.  **What’s the relationship of diameter with respect to the age of the
+    tree for AMERICANO species.**
 
 2.  **How many trees were planted every year in Kerrisdale
     neighbourhood? How about every season? Every month?**
@@ -44,13 +44,13 @@ dataset. This analysis contains three exercises: 1. Special Data types
 # Exercise 1: Special Data Types
 
 In this exercise, I will modify the plot I made in milestone 3. The code
-and the plot is placed below:
+and the plot are placed below:
 
 ### Plot from milestone 2:
 
 I divided the age of the trees into 5 groups( 0 to 6, 6 to 11, 11 to 16,
 16 to 21, 21 to 26, and 26 +), and use filter to select neighbourhood
-that have more than 4000 trees because there are a lot of neighbourhoods
+that has more than 4000 trees because there are a lot of neighbourhoods
 and it is hard to plot all of them. I am going to plot the boxplot and
 jitterplot of the diameter for each age group in each neighbourhood.
 
@@ -80,9 +80,9 @@ vancouver_trees %>%
 
 ![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
-Now, we have the plot from previous milestone. I am going to choose two
-tasks from the below three tasks and modify this plot by the
-instructions.
+**Now, we have the plot from previous milestone. I am going to choose
+two tasks from the below three tasks and modify this plot by the
+instructions.**
 
 1.  Produce a new plot that reorders a factor in your original plot,
     using the `forcats` package (3 points). Then, in a sentence or two,
@@ -128,22 +128,23 @@ instructions.
 **Task Number**: 3
 
 In the previous analysis, I calculated the age of the tree using the
-current year subtract the plant year. But I ignored the time difference
-between the plant month and date. So the age I calculated was not very
-accurate. I want to add this difference to make the age more accurate.
+current year subtracting the plant year. But I ignored the time
+difference between the plant month and date. So the age I calculated was
+not very accurate. I want to add this difference to make the age more
+accurate.
 
 Instead of using the previous way to calculate the age of the trees, I
-will calculate the time difference between the plant date and the and
-the date that this dataset was last updated “2021-10-04”(round to 2
-decimal places) by using the lubridate package. First, I am going to add
-a column named time\_diff which is the time difference in days. Then I
-am going add a new column called age\_of\_tree which are the time
+will calculate the time difference between the plant date and the last
+date that this dataset was last updated “2021-10-04”(round to 2 decimal
+places) by using the lubridate package. First, I am going to add a
+column named time\_diff which is the time difference in days. Then I am
+going to add a new column called age\_of\_tree which is the time
 difference converted in years.
 
 Then, the trees are divided 5 age groups( 0 to 6, 6 to 11, 11 to 16, 16
 to 21, 21 to 26, and 26 +) by using the age of the trees we just
-calculated. This new tibble is named as tree\_age\_range and I am going
-to use this tibble to find the distribution of trees by different age
+calculated. This new tibble is named tree\_age\_range and I am going to
+use this tibble to find the distribution of trees by different age
 groups.
 
 ``` r
@@ -158,57 +159,55 @@ tree_age_range <- vancouver_trees %>%
                                age_of_tree<=16 ~ "11 to 16",
                                age_of_tree<=21 ~ "16 to 21",
                                age_of_tree<=26 ~ "21 to 26",
-                               TRUE ~ "26+")) %>%
-  select(diameter, age_range)
+                               TRUE ~ "26+"))
   
 print(tree_age_range)
 ```
 
-    ## # A tibble: 70,063 x 2
-    ##    diameter age_range
-    ##       <dbl> <chr>    
-    ##  1    10    21 to 26 
-    ##  2    10    21 to 26 
-    ##  3     4    26+      
-    ##  4    18    21 to 26 
-    ##  5     9    26+      
-    ##  6    15    26+      
-    ##  7    14    26+      
-    ##  8    16    26+      
-    ##  9     7.5  26+      
-    ## 10     7.75 26+      
+    ## # A tibble: 70,063 x 6
+    ##    neighbourhood_name       date_planted diameter time_diff age_of_tree age_range
+    ##    <chr>                    <date>          <dbl> <drtn>          <dbl> <chr>    
+    ##  1 MARPOLE                  1999-01-13      10     8300 da~        22.7 21 to 26 
+    ##  2 MARPOLE                  1996-05-31      10     9257 da~        25.4 21 to 26 
+    ##  3 KENSINGTON-CEDAR COTTAGE 1993-11-22       4    10178 da~        27.9 26+      
+    ##  4 KENSINGTON-CEDAR COTTAGE 1996-04-29      18     9289 da~        25.4 21 to 26 
+    ##  5 KENSINGTON-CEDAR COTTAGE 1993-12-17       9    10153 da~        27.8 26+      
+    ##  6 KENSINGTON-CEDAR COTTAGE 1993-12-16      15    10154 da~        27.8 26+      
+    ##  7 KENSINGTON-CEDAR COTTAGE 1993-12-16      14    10154 da~        27.8 26+      
+    ##  8 KENSINGTON-CEDAR COTTAGE 1993-12-16      16    10154 da~        27.8 26+      
+    ##  9 KENSINGTON-CEDAR COTTAGE 1993-12-03       7.5  10167 da~        27.8 26+      
+    ## 10 KENSINGTON-CEDAR COTTAGE 1993-12-03       7.75 10167 da~        27.8 26+      
     ## # ... with 70,053 more rows
 
 **Task Number**: 1
 
-In the graph below, the x-axis age\_range is out of order. So I am going
-to use fct\_relevel() to reorder the x axis.
+In the original plot, the x-axis age\_range is out of order. So I am
+going to use fct\_relevel() to reorder the x-axis.
+
+The graph below is the updated graph after reordering x-axis. After
+relevel, we can see the graph makes more sense now. The graphs show that
+most trees are between ages 21-26.
 
 ``` r
 tree_age_range %>%
-  ggplot(aes(age_range))+
-  geom_bar()
+  group_by(neighbourhood_name) %>%
+  filter(n() > 4000 ) %>%
+  # Filter the neighbourhood that have more than 2000 trees
+  mutate(age_range = fct_relevel(age_range, c("0 to 6","6 to 11", "11 to 16","16 to 21", "21 to 26", "26+"))) %>%
+  ggplot(aes(x=age_range,y= diameter))+
+  geom_jitter(size=0.7, colour = "pink") +
+  geom_boxplot(aes(alpha = 0.3)) +
+  facet_grid(~neighbourhood_name) +  
+  coord_cartesian(ylim =  c(0, 25))+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))+
+  xlab("age range of tree") + ylab("number of trees")
 ```
 
 ![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-The graph below is the updated graph after reordering x axis. After
-relevel, we can see the graph makes more sense now. The graphs shows
-that most trees are between age 21-26.
-
-``` r
-tree_age_range %>%
-  mutate(age_range = fct_relevel(age_range, c("0 to 6","6 to 11", "11 to 16","16 to 21", "21 to 26", "26-"))) %>%
-  ggplot(aes(age_range))+
-  geom_bar()
-```
-
-    ## Warning: Unknown levels in `f`: 26-
-
-![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 # Exercise 2: Modelling
 
-## 2.0
+## 2.0 Choose research question and variable of interest
 
 The following is the research question and variable of interest I am
 going to analyze in this exercise:
@@ -218,15 +217,13 @@ age of the tree for AMERICANO species.
 
 **Variable of interest**: diameter
 
-## 2.1
+## 2.1 Model fitting
 
 I am going to make a tibble named Americana\_tree which contains the
 diameter and date\_planted for AMERICANA species. Then I am going to add
 a new column called age\_of\_tree. Next, I am going to fit a linear
-model on diameter with respect to age of tree and store the model as
+model on diameter with respect to the age of tree and store the model as
 model1.
-
-The original plot has some big outliers.
 
 ``` r
 Americana_tree <- vancouver_trees %>%
@@ -249,18 +246,17 @@ print(model1)
     ##     -0.7912       0.4027
 
 To see the accuracy of model1, I am going to plot the data as points and
-model1 as regression line. It is obvious that there are some extreme
-outliers which affect the accuracy of our model. So next, I am going to
-remove the outliers.
+model1 as a regression line. There are some extreme outliers that affect
+the accuracy of our model. So next, I am going to remove the outliers.
 
 ``` r
 Americana_tree %>%
   ggplot(aes(age_of_tree, diameter)) +
-  geom_point() +
+  geom_point(aes(colour=diameter),size=1) +
   geom_abline(slope=0.4027,intercept=-0.7912)
 ```
 
-![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 Removing outliers, I am going to store all the outliers in the variable
 called outliers. And then I am going to remove these outliers from the
@@ -284,16 +280,16 @@ print(model2)
     ## (Intercept)  age_of_tree  
     ##     -0.8627       0.3765
 
-Below is the graph of the data and new model:
+Below is the graph of the data and model2:
 
 ``` r
 Americana_tree_2 %>%
   ggplot(aes(age_of_tree, diameter)) +
-  geom_point() +
+  geom_point(aes(colour=diameter), size=1) +
   geom_abline(slope=0.3765,intercept=--0.8627)
 ```
 
-![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 To test if the accuracy of the model was increased by removing outliers,
 I summarized the two models. And it is clear that R squared is increased
@@ -346,12 +342,10 @@ summary(model2)
     ## Multiple R-squared:  0.3636, Adjusted R-squared:  0.3633 
     ## F-statistic:  1277 on 1 and 2236 DF,  p-value: < 2.2e-16
 
-<!----------------------------------------------------------------------------->
-
-## 2.2
+## 2.2 Create tibble with preictions and residual
 
 I am going to produce a new tibble named model2\_fit which includes the
-predictions on diameter and the residule using the model2 I fitted
+predictions on diameter and the residual using the model2 I fitted
 previously using broom::augment().
 
 ``` r
@@ -379,101 +373,63 @@ print(model2_fit)
 
 # Exercise 3: Reading and writing data
 
-For this exercise, I am going to create a new folder called output in
+For this exercise, I am going to create a new folder called ‘output’ in
 the top level of the repository.
 
-## 3.1 (5 points)
+## 3.1 Store tibble as csv file in ‘output’ file
 
-Take a summary table that you made from Milestone 2 (Exercise 1.2), and
-write it as a csv file in your `output` folder. Use the `here::here()`
-function.
+To fulfill the robustness and reprehensibility, I use ifelse to check
+weather the ‘output’ folder exists. If it exists, it will return the
+current directory of ‘output’ file. If not, it will create a new
+‘output’ file in the default location.
 
--   **Robustness criteria**: You should be able to move your Mini
-    Project repository / project folder to some other location on your
-    computer, or move this very Rmd file to another location within your
-    project repository / folder, and your code should still work.
--   **Reproducibility criteria**: You should be able to delete the csv
-    file, and remake it simply by knitting this Rmd file.
+Then I am using the tibble named tree\_diameter I created in the
+previous milestone. This tibble contains the
+mean/minimum/maximum/median/standard deviation and number of trees for
+each species.
 
-<!-------------------------- Start your work below ---------------------------->
-<!----------------------------------------------------------------------------->
+The last step is to store the data as a csv file and put it in the
+‘output’ file using write.csv().
 
-## 3.2 (5 points)
+``` r
+#create output folder if there is no one. if there is output folder, return the directory
+ifelse(!dir.exists(here::here("output")), dir.create(here::here("output")),here::here("output"))
+```
 
-Write your model object from Exercise 2 to an R binary file (an RDS),
-and load it again. Be sure to save the binary file in your `output`
-folder. Use the functions `saveRDS()` and `readRDS()`.
+    ## [1] TRUE
 
--   The same robustness and reproducibility criteria as in 3.1 apply
-    here.
+``` r
+tree_diameter <- vancouver_trees %>%
+  select(diameter, species_name) %>%
+  group_by(species_name) %>%
+  summarise(diameter_mean=mean(diameter, na.rm=TRUE), diameter_min=min(diameter, na.rm=TRUE),
+            diameter_max=max(diameter, na.rm=TRUE), diameter_median=median(diameter, na.rm=TRUE),
+            diameter_sd=sd(diameter, na.rm=TRUE), number_of_trees=n())
 
-<!-------------------------- Start your work below ---------------------------->
-<!----------------------------------------------------------------------------->
+write.csv(tree_diameter, here::here("output", "tree_diameter_data"))
+```
 
-# Tidy Repository
+## 3.2 Store model2 as RDS file in ‘output’ file
 
-Now that this is your last milestone, your entire project repository
-should be organized. Here are the criteria we’re looking for.
+I am going to create a RDS file named ‘model of diameter and age of
+tree’ to store the model2 and put it in the ‘output’ folder use
+saveRDS() and readRDS().
 
-## Main README (3 points)
+``` r
+ifelse(!dir.exists(here::here("output")), dir.create(here::here("output")),here::here("output"))
+```
 
-There should be a file named `README.md` at the top level of your
-repository. Its contents should automatically appear when you visit the
-repository on GitHub.
+    ## [1] "C:/Users/Yuwei/Desktop/Mini-Data-Analysis---Yuwei/output"
 
-Minimum contents of the README file:
+``` r
+saveRDS(model2, file = here::here("output", "model of diameter and age of tree")) 
+readRDS(here::here("output", "model of diameter and age of tree"))
+```
 
--   In a sentence or two, explains what this repository is, so that
-    future-you or someone else stumbling on your repository can be
-    oriented to the repository.
--   In a sentence or two (or more??), briefly explains how to engage
-    with the repository. You can assume the person reading knows the
-    material from STAT 545A. Basically, if a visitor to your repository
-    wants to explore your project, what should they know?
-
-Once you get in the habit of making README files, and seeing more README
-files in other projects, you’ll wonder how you ever got by without them!
-They are tremendously helpful.
-
-## File and Folder structure (3 points)
-
-You should have at least four folders in the top level of your
-repository: one for each milestone, and one output folder. If there are
-any other folders, these are explained in the main README.
-
-Each milestone document is contained in its respective folder, and
-nowhere else.
-
-Every level-1 folder (that is, the ones stored in the top level, like
-“Milestone1” and “output”) has a `README` file, explaining in a sentence
-or two what is in the folder, in plain language (it’s enough to say
-something like “This folder contains the source for Milestone 1”).
-
-## Output (2 points)
-
-All output is recent and relevant:
-
--   All Rmd files have been `knit`ted to their output, and all data
-    files saved from Exercise 3 above appear in the `output` folder.
--   All of these output files are up-to-date – that is, they haven’t
-    fallen behind after the source (Rmd) files have been updated.
--   There should be no relic output files. For example, if you were
-    knitting an Rmd to html, but then changed the output to be only a
-    markdown file, then the html file is a relic and should be deleted.
-
-Our recommendation: delete all output files, and re-knit each
-milestone’s Rmd file, so that everything is up to date and relevant.
-
-PS: there’s a way where you can run all project code using a single
-command, instead of clicking “knit” three times. More on this in STAT
-545B!
-
-## Error-free code (1 point)
-
-This Milestone 3 document knits error-free. (We’ve already graded this
-aspect for Milestone 1 and 2)
-
-## Tagged release (1 point)
-
-You’ve tagged a release for Milestone 3. (We’ve already graded this
-aspect for Milestone 1 and 2)
+    ## 
+    ## Call:
+    ## lm(formula = diameter ~ age_of_tree, data = Americana_tree_2)
+    ## 
+    ## Coefficients:
+    ## (Intercept)  age_of_tree  
+    ##     -0.8627       0.3765
