@@ -253,7 +253,8 @@ the accuracy of our model. So next, I am going to remove the outliers.
 Americana_tree %>%
   ggplot(aes(age_of_tree, diameter)) +
   geom_point(aes(colour=diameter),size=1) +
-  geom_abline(slope=0.4027,intercept=-0.7912)
+  geom_abline(slope=0.4027,intercept=-0.7912)+
+  labs(title="Americana tree(age vs. diameter) + model1")
 ```
 
 ![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
@@ -286,7 +287,8 @@ Below is the graph of the data and model2:
 Americana_tree_2 %>%
   ggplot(aes(age_of_tree, diameter)) +
   geom_point(aes(colour=diameter), size=1) +
-  geom_abline(slope=0.3765,intercept=--0.8627)
+  geom_abline(slope=0.3765,intercept=--0.8627)+
+  labs(title="Amricana tree(age vs. diameter) + model2")
 ```
 
 ![](Mini-Data-Analysis-3_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
@@ -396,7 +398,7 @@ The last step is to store the data as a csv file and put it in the
 ifelse(!dir.exists(here::here("output")), dir.create(here::here("output")),here::here("output"))
 ```
 
-    ## [1] TRUE
+    ## [1] "C:/Users/Yuwei/Desktop/Mini-Data-Analysis---Yuwei/output"
 
 ``` r
 tree_diameter <- vancouver_trees %>%
@@ -407,6 +409,7 @@ tree_diameter <- vancouver_trees %>%
             diameter_sd=sd(diameter, na.rm=TRUE), number_of_trees=n())
 
 write.csv(tree_diameter, here::here("output", "tree_diameter_data"))
+#read.csv(here::here("output", "tree_diameter_data"))
 ```
 
 ## 3.2 Store model2 as RDS file in ‘output’ file
